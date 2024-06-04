@@ -1,0 +1,52 @@
+# Configuration for the HTTP server.
+server:
+    # Address to host on, eg :80 or 127.0.0.1:1337
+    addr: ":80"
+    # Authentication tokens for additional access,
+    # specified using X-API-Key: {} or ?api_key={}
+    tokens:
+        # Disables rate limiting for these requests.
+        no_ratelimit: "noratelimitforme123"
+        # Enables administrator endpoints and disables regular
+        # rate limits (auth failure rate limit still applies).
+        admin: "admintoken123"
+    # Rate limiting for accessing files and directories.
+    # For details see https://github.com/Zytekaron/gorl.
+    ratelimit:
+        # The number of tokens available to use per refill period.
+        limit: 50
+        # The maximum size of the bucket and initial burst allowed.
+        # This number should always be equal to or greater than limit.
+        burst: 250
+        # How often to refill "limit" tokens, up to "burst".
+        # (supports units like 1, 10 sec, 2.5hrs; default unit is seconds)
+        refill: 1s
+
+# Configuration for the file server.
+files:
+    # The directory from which to serve files.
+    # Clients cannot use '..' to escape from this directory.
+    directory: /Users/z/projects/zytekaron/fs/testdir
+
+# Configuration for file server caching.
+cache:
+    # Max number of entries allowed in the cache before automatic eviction.
+    max_count: 256
+    # Max size of entries, larger files never cached.
+    max_entry: 64 KiB
+
+#
+# For byte sizes, this config supports the following case-insensitive units:
+# - B, KB, MB, GB, TB, KiB, MiB, GiB, TiB
+# Examples:
+# - 1024   (1024 bytes)
+# - 10 KB
+# - 2.5MiB
+#
+# For durations, this config supports various versions of the following case-insensitive units:
+# - nanosecond, microsecond, millisecond, second, minute, hour, day(24h), week(7d)
+# Examples:
+# - 10     (10 seconds)
+# - 30 sec
+# - 2.5hrs
+#
