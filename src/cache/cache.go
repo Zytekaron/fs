@@ -9,6 +9,7 @@ import (
 type FileData struct {
 	FileBytes  *[]byte
 	DirEntries *[]fs.DirEntry
+	BaseDir    *string
 	IsDir      bool
 }
 

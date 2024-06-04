@@ -47,7 +47,7 @@ func readFileHandler(cfg *config.Config, c *cache.Cache) http.Handler {
 
 		if data, ok := c.Get(filePath); ok {
 			if data.IsDir {
-				readFileHandlerSendDir(w, *data.DirEntries, viewas)
+				readFileHandlerSendDir(w, *data.BaseDir, *data.DirEntries, viewas)
 			} else {
 				size := int64(len(*data.FileBytes))
 				reader := bytes.NewReader(*data.FileBytes)
@@ -89,10 +89,11 @@ func readFileHandler(cfg *config.Config, c *cache.Cache) http.Handler {
 
 			c.Put(filePath, &cache.FileData{
 				DirEntries: &dir,
+				BaseDir:    &filePath,
 				IsDir:      true,
 			})
 
-			readFileHandlerSendDir(w, dir, viewas)
+			readFileHandlerSendDir(w, filePath, dir, viewas)
 		} else {
 			size := stat.Size()
 			reader := io.Reader(file)
@@ -119,7 +120,7 @@ func readFileHandler(cfg *config.Config, c *cache.Cache) http.Handler {
 	})
 }
 
-func readFileHandlerSendDir(w http.ResponseWriter, entries []fs.DirEntry, viewas string) error {
+func readFileHandlerSendDir(w http.ResponseWriter, baseDir string, entries []fs.DirEntry, viewas string) error {
 	switch viewas {
 	case "json_obj":
 		return response.WriteJSON(w, http.StatusOK, map[string]any{
@@ -128,7 +129,7 @@ func readFileHandlerSendDir(w http.ResponseWriter, entries []fs.DirEntry, viewas
 	case "json":
 		return response.WriteJSON(w, http.StatusOK, makeList(entries))
 	case "hl", "browser":
-		list := makeListHyperlinks(entries)
+		list := makeListHyperlinks(baseDir, entries)
 		return response.WriteData(w, http.StatusOK, []byte(list))
 	default:
 		list := strings.Join(makeList(entries), "\n")
@@ -150,11 +151,11 @@ func makeList(entries []fs.DirEntry) []string {
 	return list
 }
 
-func makeListHyperlinks(entries []fs.DirEntry) string {
+func makeListHyperlinks(baseDir string, entries []fs.DirEntry) string {
 	var buf strings.Builder
 	for _, entry := range entries {
 		buf.WriteString(`<a href="`)
-		buf.WriteString(entry.Name())
+		buf.WriteString(path.Join(baseDir, entry.Name()))
 		buf.WriteString(`">`)
 		buf.WriteString(entry.Name())
 		if entry.IsDir() {
