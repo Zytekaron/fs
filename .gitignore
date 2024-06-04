@@ -2,6 +2,9 @@
 .idea
 .vscode
 
+# MacOS stuff
+.DS_Store
+
 # Project-related files
 config.yml
 
