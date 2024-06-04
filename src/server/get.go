@@ -17,6 +17,7 @@ import (
 	"path"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"strings"
 )
 
@@ -86,6 +87,15 @@ func readFileHandler(cfg *config.Config, c *cache.Cache) http.Handler {
 				response.WriteErrorReason(w, http.StatusInternalServerError, "error statting file")
 				return
 			}
+			slices.SortFunc(dir, func(a, b os.DirEntry) int {
+				if a.IsDir() && !b.IsDir() {
+					return -1
+				}
+				if !a.IsDir() && b.IsDir() {
+					return 1
+				}
+				return strings.Compare(a.Name(), b.Name())
+			})
 
 			c.Put(filePath, &cache.FileData{
 				DirEntries: &dir,
