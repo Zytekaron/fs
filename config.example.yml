@@ -26,7 +26,7 @@ server:
 files:
     # The directory from which to serve files.
     # Clients cannot use '..' to escape from this directory.
-    directory: /Users/z/projects/zytekaron/fs/testdir
+    directory: /files
 
 # Configuration for file server caching.
 cache:

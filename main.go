@@ -11,9 +11,9 @@ var cfg *config.Config
 
 func init() {
 	var err error
-	cfg, err = config.Load("config.example.yml")
+	cfg, err = config.Load("config.yml")
 	if err != nil {
-		log.Fatalln("error loading config.example.yml:", err)
+		log.Fatalln("error loading config.yml:", err)
 	}
 
 	err = cfg.Validate()
